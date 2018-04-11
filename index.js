@@ -23,6 +23,8 @@ var $ = require('jquery');
 var Color = require('color.js');
 var urlRegex = require('url-regex');
 const contextMenu = require('electron-context-menu')
+const https = require('https');
+const urlLib = require('url')
 var globalCloseableTabsOverride;
 /**
  * OBJECT
@@ -313,8 +315,12 @@ function Navigation(options) {
         webview.on('load-commit', function () {
             NAV._updateCtrls();
         });
+        // webview[0].addEventListener('certificate-error', (ev, wc, url, error) => {
+        //     console.log("< certificate error: ", ev,wc,url,error);
+        // });
         webview[0].addEventListener('did-navigate', function (res) {
           NAV._updateUrl(res.url);
+          //NAV._validateCertificate(res.url);          
         });
         webview[0].addEventListener('did-fail-load', function (res) {
           NAV._updateUrl(res.validatedUrl);
@@ -336,16 +342,17 @@ function Navigation(options) {
         });
         webview[0].addEventListener('did-fail-load', function (res) {
             if (res.validatedURL == $('#nav-ctrls-url').val() && res.errorCode != -3) {
-                this.executeJavaScript('document.body.innerHTML=' +
-                    '<div style="background-color:whitesmoke;padding:40px;margin:20px;font-family:consolas;">' +
+                this.executeJavaScript("document.body.innerHTML='" +
+                    '<div style="background-color:whitesmoke;padding:40px;margin:20px;font-family:consolas;border-radius:10px;">' +
+                    '<h1 align=center>=(</h1>' +
                     '<h2 align=center>Oops, this page failed to load correctly.</h2>' +
-                    '<p align=center><i>ERROR [ ' + res.errorCode + ', ' + res.errorDescription + ' ]</i></p>' +
+                    '<p align=center style=\"color:red\"><i>ERROR [ ' + res.errorCode + ', ' + res.errorDescription + ' ]</i></p>' +
                     '<br/><hr/>' +
                     '<h4>Try this</h4>' +
                     '<li type=circle>Check your spelling - <b>"' + res.validatedURL + '".</b></li><br/>' +
                     '<li type=circle><a href="javascript:location.reload();">Refresh</a> the page.</li><br/>' +
                     '<li type=circle>Perform a <a href=javascript:location.href="https://www.google.com/search?q=' + res.validatedURL + '">search</a> instead.</li><br/>' +
-                    '</div>'
+                    '</div>' + "'"
                 );
             }
         });
@@ -384,6 +391,31 @@ function Navigation(options) {
         });
       }
     } //:_updateUrl()
+
+    this._validateCertificate = function(url){
+        url = urlLib.parse(url).hostname;
+        //url = url.replace('http://','').replace('https://','').split('/')[0];
+        var options = {
+            hostname: url, 
+            agent: false, 
+            ciphers: "ALL",
+            rejectUnauthorized: true,
+            requestCert: true,
+        };    
+        
+        new Promise(function (resolve, reject) { 
+            https.get(options, function (res) {
+                var certificate = res.socket.getPeerCertificate();
+                if(typeof (certificate) === 'undefined' || certificate === null) {
+                    reject({message: 'The website did not provide a certificate'});
+                } else {
+                    resolve(certificate);
+                }
+            });
+        }).then(function(certificate) {
+            console.log(certificate)
+        });
+    }
 } //:Navigation()
 /**
  * PROTOTYPES
