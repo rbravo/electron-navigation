@@ -67,6 +67,7 @@ function Navigation(options) {
     this.SVG_FAVICON = '<svg height="100%" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
     this.SVG_ADD = '<svg height="100%" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>';
     this.SVG_CLEAR = '<svg height="100%" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+    this.INITIAL_TAB_ICON = options.initialTabIcon || '';
     /**
      * ADD ELEMENTS
      */
@@ -425,13 +426,13 @@ Navigation.prototype.newTab = function (url, options) {
     if (options.icon == 'clean') {
         tab += '<i class="nav-tabs-favicon nav-icons">' + this.SVG_FAVICON + '</i>';
     } else if (options.icon === 'default') {
-        tab += '<img class="nav-tabs-favicon nav-icons" src=""/>';
+        tab += '<img class="nav-tabs-favicon nav-icons" src="'+this.INITIAL_TAB_ICON+'"/>';
     } else {
         tab += '<img class="nav-tabs-favicon nav-icons" src="' + options.icon + '"/>';
     }
     // title
     if (options.title == 'default') {
-        tab += '<i class="nav-tabs-title"> . . . </i>';
+        tab += '<i class="nav-tabs-title">'+options.title+'</i>';
     } else {
         tab += '<i class="nav-tabs-title">' + options.title + '</i>';
     }
@@ -460,19 +461,19 @@ Navigation.prototype.newTab = function (url, options) {
         $('#nav-ctrls-url').removeAttr('readonly')
    
     // id
-    let composedWebviewTag = `<webview class="nav-views-view active" data-session="${this.SESSION_ID}" src="${this._purifyUrl(url)}"`;
-    if(options.id){
-        composedWebviewTag += ` id=${options.id}`;
-    }
-    if(options.node){
-        composedWebviewTag += " nodeintegration";
-    }
-    if (options.webviewAttributes) {
-        Object.keys(options.webviewAttributes).forEach((key) => {
-            composedWebviewTag += ` ${key}="${options.webviewAttributes[key]}"`;
-        });
-    }
-    $('#nav-body-views').append(`${composedWebviewTag}></webview>`);
+    // let composedWebviewTag = `<webview class="nav-views-view active" data-session="${this.SESSION_ID}" src="${this._purifyUrl(url)}"`;
+    // if(options.id){
+    //     composedWebviewTag += ` id=${options.id}`;
+    // }
+    // if(options.node){
+    //     composedWebviewTag += " nodeintegration";
+    // }
+    // if (options.webviewAttributes) {
+    //     Object.keys(options.webviewAttributes).forEach((key) => {
+    //         composedWebviewTag += ` ${key}="${options.webviewAttributes[key]}"`;
+    //     });
+    // }
+    // $('#nav-body-views').append(`${composedWebviewTag}></webview>`);
 
     // enable reload button
     $('#nav-ctrls-reload').removeClass('disabled');
