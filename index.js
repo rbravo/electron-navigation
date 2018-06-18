@@ -148,7 +148,10 @@ function Navigation(options) {
     $('#nav-body-tabs').on('click', '#nav-tabs-add', function () {
         NAV.newTab(NAV.navDefaultURL || 'http://www.google.com/', {
             close: options.closableTabs,
-            icon: NAV.TAB_ICON
+            icon: NAV.TAB_ICON, 
+            webPreferences: {
+                webSecurity: false
+            }
         });
     });
     //
@@ -484,7 +487,10 @@ Navigation.prototype.newTab = function (url, options) {
     // add webview
     var webV = $(`<webview ${options.id ? 'id="' + options.id + '"' : ''} class="nav-views-view active" 
     data-session="${this.SESSION_ID}" src="${this._purifyUrl(url)}" ${options.node ? 'nodeintegration' : ''}
+    ${options.node ? 'nodeintegration' : ''}
     data-options-json="${encodeURIComponent(JSON.stringify(options))}"
+    ${options.allowpopups ? 'allowpopups' : ''} 
+    ${options.disableSecurity ? 'webpreferences="allowRunningInsecureContent" disablewebsecurity' : ''} 
     ></webview>`);
     $('#nav-body-views').append(webV);
     // url text input read only?
@@ -505,6 +511,7 @@ Navigation.prototype.newTab = function (url, options) {
     //     Object.keys(options.webviewAttributes).forEach((key) => {
     //         composedWebviewTag += ` ${key}="${options.webviewAttributes[key]}"`;
     //     });
+    // }
     // }
     // $('#nav-body-views').append(`${composedWebviewTag}></webview>`);
 
